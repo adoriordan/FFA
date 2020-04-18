@@ -1,14 +1,22 @@
 #!/usr/bin/env bash
 
+# !!!WARNING!!!
+# This only works on macOS because of the dependency on osascript
+
+# change this to be the browser you want
+# options are Safari, Chrome, Firefox
+BROWSER="Safari"
+PORT="8080"
+
+osascript -e "tell application \"${BROWSER}\" to open location \"http://localhost:${PORT}\""
+
+
+printf "Web server is running ...\nPress Control-C to cancel ...\n"
+
 # This creates a web server on your computer
-# that listens on port 8080
-python -m SimpleHTTPServer 8080
+# that listens on port $PORT
+python -m SimpleHTTPServer $PORT
 
-# let the server start
-sleep 1
 
-# To connect to the server, visit http://localhost:8080 in a browser
-
-osascript -e 'tell application "Safari" to open location "http://localhost:8080"'
 
 
