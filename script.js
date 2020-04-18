@@ -1,4 +1,13 @@
 
+/*
+    Here we take the raw Google Sheet API data and filter
+    out what we actually need.
+*/
+function filter_json(raw) {
+    // TODO:
+    return raw;
+}
+
 window.addEventListener('DOMContentLoaded', () => {
     const sheet_key = '1z_gwSbVnzwlKHi4CPJ0UMVjRERR2D15jgcId5agQTEU';
     const page_num = '1';
@@ -6,6 +15,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     fetch(endpoint)
     .then((resp) => resp.json())
+    .then(filter_json)
     .then(data_loaded)
     .catch(fetch_failed);
 });
