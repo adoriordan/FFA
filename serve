@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+# This creates a web server on your computer
+# that listens on port 8080
+python -m SimpleHTTPServer 8080
+
+# let the server start
+sleep 1
+
+# To connect to the server, visit http://localhost:8080 in a browser
+
+osascript -e 'tell application "Safari" to open location "http://localhost:8080"'
+
+
