@@ -3,34 +3,86 @@
     Here we take the raw Google Sheet API data and filter
     out what we actually need.
     This is expected to be gross.
+
+    Yes, while this is technically an O(n) algorithm, I do
+    loop over the list several times. This is to promote readability
+    over speed.
 */
 function filter_json(raw) {
     // eliminate the google sheets cruft and get just the spreadsheet data
     const rough = raw.feed.entry.map(obj => obj['gs$cell'])
 
-    // find out where in the sheet the data starts.
+    // find out where in the sheet the data starts and ends.
     var data_start = -1;
+    var data_end = -1;
     for (var i = 0; i < rough.length; i++) {
-        if (rough[i]['inputValue'] == 'SCHEMA') {
-            const p = parseInt(rough[i]['row'], 10);
-            if (p == NaN) { 
-                throw "SCHEMA cell has no row? that shouldn't happen";
-            }
+        const row = parseInt(rough[i]['row'], 10);
+        if (isNaN(row)) {
+            console.error('NaN row in spreadsheet. This should be looked into');
+        }
+
+        if (data_start == -1 &&
+            rough[i]['inputValue'] === 'SCHEMA') {
+            // include the -1 check so we only pick up the first SCHEMA
+            // entry. This allows us to have the literal word 'SCHEMA'
+            // in the data.
             // the next row is the schema
             // the one after is the start of data
-            data_start = p + 2;
+            data_start = row + 2;
         }
+
+        // find the largest row value
+        data_end = Math.max(data_end, row);
+
     }
-    if (data_start == -1) {
-        throw "Could not parse google sheets data. Make sure the SCHEMA is correct";
+    if (data_start == -1 || data_end == -1) {
+        throw 'Could not parse Google Sheet. Cannot find start/end of data';
     }
 
-    var clean_data = [];
-    for (var i = 0; i < rough.length; i++) {
+    console.log(`Spreadsheet data spans rows: ${data_start} - ${data_end}`);
 
+    // We now know how many records are the the spreadsheet
+    const num_rows = (data_end - data_start) + 1;
+
+
+    const data_cells = rough.filter((cell) => {
+        const r = parseInt(cell['row'], 10);
+        return r >= data_start && r <= data_end;
+    });
+
+    // !!!WARNING!!!
+    // If you update the google sheets, you must update this.
+    const column_field_map = {
+        '1': 'zip',
+        '2': 'name',
+        '3': 'contact',
+        '4': 'info'
+    };
+
+    const clean_data = new Array(num_rows);
+    // Can't use Array.fill because it sets every element to the same reference
+    for (var i = 0; i < clean_data.length; i++) { clean_data[i] = {}; }
+
+    for (var i = 0; i < data_cells.length; i++) {
+        const row = parseInt(data_cells[i]['row'], 10);
+        if (isNaN(row)) {
+            console.error('This really should be impossible because of the first NaN check we did at the top');
+            continue;
+        }
+        // find the 0 based index into the clean_data array
+        // ie: based on the spreadsheet row, which record are we
+        // actually looking at?
+        const idx = row - data_start;
+
+        // Find out what field of this record we are looking at
+        const col = data_cells[i]['col'];
+        const key_name = column_field_map[col] || 'errorKey';
+
+        // money shot: populate the field with its value
+        clean_data[idx][key_name] = data_cells[i]['inputValue'];
     }
     
-    return rough;
+    return clean_data;
 }
 
 window.addEventListener('DOMContentLoaded', () => {
