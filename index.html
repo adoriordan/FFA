@@ -8,20 +8,39 @@
 
 	<script src="script.js"></script>
 	<style>
-		h1 {
+		#heading {
 			text-align: center; font-family: "Courier New";
 		}
-		p{
-		    font-family: "Courier New"; text-align: center; 
-	        }
+
+		#search-results {
+			border: 1px solid black;
+		}
+		.record {
+			border: 1px solid blue;
+		}
+		.name {
+			font-size: 2em;
+			display: inline-block;
+		}
+		.zipcode {
+			display: inline-block;
+			padding-left: 10px;
+			text-decoration: underline;
+		}
+		.contact {
+			font-style: italic;
+		}
 	</style>
 </head>
 <body>
-	
-    <h1> The Farm to Family Alliance </h1>
+	<div id="heading">
+    	<h1> The Farm to Family Alliance </h1>
    
-    <p> Welcome to FFA. We're working on connecting you to your local farms while farmers' markets are closed due to
+    	<p> Welcome to FFA. We're working on connecting you to your local farms while farmers' markets are closed due to
 	    COVID-19. Sit tight! </p>
+	</div>
+
+	<div id="search-results"></div>
 	
 </body>
 </html>

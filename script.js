@@ -107,5 +107,29 @@ function fetch_failed(err) {
 
 function data_loaded(data) {
     console.log(data);
+    data.forEach(d => document.getElementById('search-results').appendChild(create_cell(d)));
+}
+
+
+//////////////////////////////////////
+////////// DOM Manipulation //////////
+//////////////////////////////////////
+
+// brew('div', 'Zip Code', 'zip.red.large')
+function brew(element, text, classes) {
+    const dom = document.createElement(element);
+    dom.appendChild(document.createTextNode(text));
+    classes.split('.').forEach(c => dom.classList.add(c));
+    return dom;
+}
+
+function create_cell(record) {
+    const container = document.createElement('div');
+    container.classList.add('record');
+    container.appendChild(brew('div', record.name, 'name'));
+    container.appendChild(brew('div', record.zip, 'zipcode'));
+    container.appendChild(brew('p', record.contact, 'contact'));
+    container.appendChild(brew('p', record.info, 'info'));
+    return container;
 }
 
