@@ -130,25 +130,37 @@ function fetch_failed(err) {
     alert(err);
 }
 
+var FARM_DATA = {};
 function data_loaded(data) {
     console.log('Data has loaded:');
     console.log(data);
     FARM_DATA = data;
 }
-var FARM_DATA = {};
 
 function search_data(search_term) {
     search_term = search_term.trim();
     console.log(`Searching for term: ${search_term}`);
+
     // No term = show all data
     if (search_term == '') {
         render_data(FARM_DATA);
     } else {
-        // TODO: support for more than just zip code searching
+        const adj_zips = get_adjacent_zips(search_term);
         render_data(
-            FARM_DATA.filter(f => f.zip == search_term)
+            FARM_DATA.filter(f => adj_zips.indexOf(f.zip) !== -1)
         );
     }
+}
+
+function get_adjacent_zips(zip) {
+    const znum = parseInt(zip, 10);
+    if (isNaN(znum)) { return [zip]; }
+    const width = 5;
+    var zips = [];
+    for (var i = znum - width; i < znum + width; i++) {
+        zips.push(i.toString());
+    }
+    return zips;
 }
 
 
