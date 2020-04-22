@@ -112,7 +112,14 @@ function initialze_dom() {
         // empty = all results
         search_data('');
     });
-    
+    document.getElementById('search-term')
+            .addEventListener('keyup', e => {
+        if (e.key == 'Enter') {
+            search_data(document.getElementById('search-term').value);
+        }
+    });
+
+    // TODO: kick things off by showing all data?
 }
 
 //////////////////////////////////////
