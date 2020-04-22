@@ -91,11 +91,29 @@ window.addEventListener('DOMContentLoaded', () => {
     const endpoint = `https://spreadsheets.google.com/feeds/cells/${sheet_key}/${page_num}/public/full?alt=json`;
 
     fetch(endpoint)
-    .then((resp) => resp.json())
+    .then(resp => resp.json())
     .then(filter_json)
     .then(data_loaded)
+    .then(initialze_dom)
     .catch(fetch_failed);
+
 });
+
+function initialze_dom() {
+    document.getElementById('search-results').appendChild(
+        brew('div', 'Enter a zip code or click "Show All Data"', '')
+    );
+    document.getElementById('search-button')
+            .addEventListener('click', () => {
+        search_data(document.getElementById('search-term').value);
+    });
+    document.getElementById('all-data-button')
+            .addEventListener('click', () => {
+        // empty = all results
+        search_data('');
+    });
+    
+}
 
 //////////////////////////////////////
 ////////// Application Logic /////////
@@ -106,8 +124,24 @@ function fetch_failed(err) {
 }
 
 function data_loaded(data) {
+    console.log('Data has loaded:');
     console.log(data);
-    data.forEach(d => document.getElementById('search-results').appendChild(create_cell(d)));
+    FARM_DATA = data;
+}
+var FARM_DATA = {};
+
+function search_data(search_term) {
+    search_term = search_term.trim();
+    console.log(`Searching for term: ${search_term}`);
+    // No term = show all data
+    if (search_term == '') {
+        render_data(FARM_DATA);
+    } else {
+        // TODO: support for more than just zip code searching
+        render_data(
+            FARM_DATA.filter(f => f.zip == search_term)
+        );
+    }
 }
 
 
@@ -115,12 +149,14 @@ function data_loaded(data) {
 ////////// DOM Manipulation //////////
 //////////////////////////////////////
 
-// brew('div', 'Zip Code', 'zip.red.large')
-function brew(element, text, classes) {
-    const dom = document.createElement(element);
-    dom.appendChild(document.createTextNode(text));
-    classes.split('.').forEach(c => dom.classList.add(c));
-    return dom;
+function render_data(farms) {
+    const result_elem = document.getElementById('search-results');
+    // clear all current results
+    while (result_elem.firstChild) {
+        result_elem.firstChild.remove();
+    }
+    // populate with new results
+    farms.forEach(d => result_elem.appendChild(create_cell(d)));
 }
 
 function create_cell(record) {
@@ -132,4 +168,14 @@ function create_cell(record) {
     container.appendChild(brew('p', record.info, 'info'));
     return container;
 }
+
+// brew('div', 'Zip Code', 'zip.red.large')
+function brew(element, text, classes) {
+    const dom = document.createElement(element);
+    dom.appendChild(document.createTextNode(text));
+    if (classes != '') classes.split('.').forEach(c => dom.classList.add(c));
+    return dom;
+}
+
+
 

@@ -90,10 +90,14 @@
     	<p> Welcome to FFA. We're working on connecting you to your local farms while farmers' markets are closed due to
 	    COVID-19. Sit tight! </p>
 	</div>
-	<div class="topnav">
-		<input type="text" placeholder="Zipcode...">
+
+    <!-- NOTE: all brian needs is this user-inputs div and the following
+               search-results div. Everything else is up for change -->
+	<div id="user-inputs" class="">
+		<input id="search-term" type="text" placeholder="Zipcode...">
+        <button id="search-button">Search!</button>
+        <button id="all-data-button">Show All Data</button>
 	</div>
-	
 	<div id="search-results"></div>
 	
 </body>
